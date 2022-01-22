@@ -133,7 +133,8 @@ def main():
     
     
     # Load per time step data into data frame
-    step_df = pd.read_csv('drift_perStepPerSimulationCSV.csv', sep=',', quotechar='"')
+    input_dir = pathlib.Path(args.input_dir) 
+    step_df = pd.read_csv(input_dir/DRIFT_CSV_FILENAME, sep=',', quotechar='"')
     # Strip any white space from column names
     step_df.columns = step_df.columns.str.strip()
     # rename comm_radius to 'r'
@@ -174,7 +175,7 @@ def main():
     # Save to image
     #f.tight_layout()
     output_dir = pathlib.Path(args.output_dir) 
-    f.savefig(output_dir/"Figure1.png", dpi=args.dpi) 
+    f.savefig(output_dir/"figure.png", dpi=args.dpi) 
 
 
 # Run the main method if this was not included as a module
