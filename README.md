@@ -78,5 +78,5 @@ python3 plot.py build -o build/figures
 The sample figures were generated from the root directory using
 
 ```bash
-python3 plot.py -i sample/data/2080Ti-11.4-471.41/alpha.2-2080Ti-11.4-beltsoff -o sample/figures/2080Ti-11.4-471.41/alpha.2-2080Ti-11.4-beltsoff
+python3 plot_publication.py -i sample/data/2080Ti-11.4-471.41/alpha.2-2080Ti-11.4-beltsoff -o sample/figures/2080Ti-11.4-471.41/alpha.2-2080Ti-11.4-beltsoff
 ```

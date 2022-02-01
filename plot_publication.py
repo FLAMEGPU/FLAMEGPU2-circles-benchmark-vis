@@ -143,7 +143,7 @@ def main():
     # Plot group by communication radius (r)
     plt_drift = sns.lineplot(x='step', y='s_drift', hue='r', data=step_df, ax=ax['drift'])
     plt_drift.set(xlabel='Simulation steps', ylabel='Mean drift')
-    ax['drift'].set_title(label='a', loc='left', fontweight="bold")
+    ax['drift'].set_title(label='A', loc='left', fontweight="bold")
     
     # visualisation path
     visualisation_dir = pathlib.Path(args.vis_dir) 
@@ -152,30 +152,31 @@ def main():
     v1 = mpimg.imread(visualisation_dir / VISUALISATION_IMAGE_FILENAMES[0]) 
     ax['v1'].imshow(v1)
     ax['v1'].set_axis_off()
-    ax['v1'].set_title(label='b', loc='left', fontweight="bold")
+    ax['v1'].set_title(label='B', loc='left', fontweight="bold")
     
     # Plot vis for time step = 350
     v1 = mpimg.imread(visualisation_dir / VISUALISATION_IMAGE_FILENAMES[1]) 
     ax['v2'].imshow(v1)
     ax['v2'].set_axis_off()
-    ax['v2'].set_title(label='c', loc='left', fontweight="bold")
+    ax['v2'].set_title(label='C', loc='left', fontweight="bold")
     
     # Plot vis for time step = 850
     v1 = mpimg.imread(visualisation_dir / VISUALISATION_IMAGE_FILENAMES[2]) 
     ax['v3'].imshow(v1)
     ax['v3'].set_axis_off()
-    ax['v3'].set_title(label='d', loc='left', fontweight="bold")
+    ax['v3'].set_title(label='D', loc='left', fontweight="bold")
     
     # Plot vis for time step = 2500
     v1 = mpimg.imread(visualisation_dir / VISUALISATION_IMAGE_FILENAMES[3]) 
     ax['v4'].imshow(v1)
     ax['v4'].set_axis_off()
-    ax['v4'].set_title(label='e', loc='left', fontweight="bold")
+    ax['v4'].set_title(label='E', loc='left', fontweight="bold")
     
     # Save to image
     #f.tight_layout()
     output_dir = pathlib.Path(args.output_dir) 
     f.savefig(output_dir/"figure.png", dpi=args.dpi) 
+    f.savefig(output_dir/"figure.pdf", format='pdf', dpi=args.dpi) 
 
 
 # Run the main method if this was not included as a module
