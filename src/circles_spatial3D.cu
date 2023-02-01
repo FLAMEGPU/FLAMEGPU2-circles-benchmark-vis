@@ -73,14 +73,14 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
     // Compute the actual density and return it.
     runOutputs.agentDensity = runInputs.AGENT_COUNT / (ENV_WIDTH * ENV_WIDTH * ENV_WIDTH);
     {   // Location message
-        flamegpu::MessageSpatial3D::Description &message = model.newMessage<flamegpu::MessageSpatial3D>("location");
+        flamegpu::MessageSpatial3D::Description message = model.newMessage<flamegpu::MessageSpatial3D>("location");
         message.newVariable<int>("id");
         message.setRadius(runInputs.COMM_RADIUS);
         message.setMin(ENV_MIN, ENV_MIN, ENV_MIN);
         message.setMax(ENV_MAX, ENV_MAX, ENV_MAX);
     }
     {   // Circle agent
-        flamegpu::AgentDescription &agent = model.newAgent("Circle");
+        flamegpu::AgentDescription agent = model.newAgent("Circle");
         agent.newVariable<int>("id");
         agent.newVariable<float>("x");
         agent.newVariable<float>("y");
@@ -94,18 +94,18 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
 
     // Global environment variables.
     {
-        flamegpu::EnvironmentDescription &env = model.Environment();
+        flamegpu::EnvironmentDescription env = model.Environment();
         env.newProperty("repulse", ENV_REPULSE);
     }
 
     // Organise the model. 
 
     {   // Layer #1
-        flamegpu::LayerDescription &layer = model.newLayer();
+        flamegpu::LayerDescription layer = model.newLayer();
         layer.addAgentFunction(output_message);
     }
     {   // Layer #2
-        flamegpu::LayerDescription &layer = model.newLayer();
+        flamegpu::LayerDescription layer = model.newLayer();
         layer.addAgentFunction(move);
     }
 
@@ -126,8 +126,8 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
     // Create the simulation object
     flamegpu::CUDASimulation simulation(model);
 
-#ifdef VISUALISATION
-    flamegpu::visualiser::ModelVis& visualisation = simulation.getVisualisation();
+#ifdef FLAMEGPU_VISUALISATION
+    flamegpu::visualiser::ModelVis visualisation = simulation.getVisualisation();
     {
         visualisation.setInitialCameraLocation(ENV_WIDTH, ENV_WIDTH, ENV_WIDTH);
         visualisation.setInitialCameraTarget(0.0f, 0.0f, 0.0f);
@@ -136,7 +136,7 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
         visualisation.setClearColor(1.0f, 1.0f, 1.0f);
         visualisation.setFPSColor(0.0f, 0.0f, 0.0f);
         visualisation.setBeginPaused(true);
-        auto& agt = visualisation.addAgent("Circle");
+        auto agt = visualisation.addAgent("Circle");
         agt.setModel(flamegpu::visualiser::Stock::Models::SPHERE);
         agt.setModelScale(0.1f);
     }
@@ -146,7 +146,8 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
 
     // Set config configuraiton properties 
     simulation.SimulationConfig().timing = false;
-    simulation.SimulationConfig().verbose = false;
+    simulation.SimulationConfig().telemetry = false;
+    simulation.SimulationConfig().verbosity = flamegpu::Verbosity::Quiet;
     simulation.SimulationConfig().random_seed = runInputs.SEED;
     simulation.SimulationConfig().steps = runInputs.STEPS;
     simulation.CUDAConfig().device_id = runInputs.CUDA_DEVICE;
@@ -173,7 +174,7 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
     // Execute 
     simulation.simulate();
 
-#ifdef VISUALISATION
+#ifdef FLAMEGPU_VISUALISATION
     visualisation.join();
 #endif
 
@@ -181,7 +182,7 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
     runOutputs.drift_per_step = std::make_shared<std::vector<double>>();
     runOutputs.messages_per_step = std::make_shared<std::vector<double>>();
     flamegpu::RunLog run_log = simulation.getRunLog();
-    std::list<flamegpu::LogFrame> step_log = run_log.getStepLog();
+    const auto &step_log = run_log.getStepLog();
     for (auto& log : step_log) {
         runOutputs.drift_per_step->push_back(log.getAgent("Circle").getMean("drift"));
         runOutputs.messages_per_step->push_back(log.getAgent("Circle").getMean("stepMessageCount"));
@@ -195,4 +196,7 @@ void run_circles_spatial3D(const RunSimulationInputs runInputs, RunSimulationOut
     // get message count from exit log
     flamegpu::LogFrame exit_log = run_log.getExitLog();
     runOutputs.mean_messageCount = exit_log.getAgent("Circle").getMean("totalMessageCount") / (double)runInputs.STEPS;
+
+    // Ensure profiling is accurate
+    flamegpu::util::cleanup();
 }
