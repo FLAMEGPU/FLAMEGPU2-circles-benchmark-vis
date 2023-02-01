@@ -191,7 +191,7 @@ bool experiment_drift(custom_cli cli) {
 }
 
 
-#ifdef VISUALISATION
+#ifdef FLAMEGPU_VISUALISATION
 bool experiment_visualisation(custom_cli cli) {
     // Name the experiment - this will end up in filenames/paths.
     const std::string EXPERIMENT_LABEL = "drift";
@@ -237,7 +237,7 @@ int main(int argc, const char ** argv) {
     // Custom arg parsing, to prevent the current F2 arg parsing from occuring. 
     custom_cli cli = parse_custom_cli(argc, argv);
 
-#ifdef VISUALISATION
+#ifdef FLAMEGPU_VISUALISATION
     return experiment_visualisation(cli);
 #else
     return experiment_drift(cli);
